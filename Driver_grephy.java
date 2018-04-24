@@ -19,6 +19,43 @@
      
       Scanner input = new Scanner(System.in);
       
+      //learn alphabet
+     // String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+       //int[] count = new int[52];
+       char[] alphabet = new char[50];
+       boolean dup = false;
+       int count = 0;
+       String file = "";
+     
+       while(input.hasNext()){
+         file += input.next();
+       }
+     
+       char[] fileArray = file.toCharArray();
+       
+       for(char c : fileArray){
+         //System.out.println(c);
+         dup = false;
+         for(int i = 0; i < alphabet.length; i++){
+           if(c == alphabet[i]){
+             dup = true;
+           }
+         }
+         if(dup == false){
+           alphabet[count] = c;
+           count++;
+         }
+         
+       }
+       
+       //for(char c : alphabet){
+         System.out.println(alphabet);
+       //}
+       
+      
+      
+      
+      /*
       // Scans through each line of an input file
       while (input.hasNextLine()){
         // String to be scanned to find the pattern.
@@ -40,6 +77,22 @@
         } else {
           System.out.println("NO MATCH");
         }
-      }
+      }*/
    }
+   /*
+   public static void learnAlphabet(Scanner input){
+     String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+     int[] count = new int[52];
+     char[] alphabet = char[5];
+     
+     while(input.hasNext()){
+       String file += input.Next();
+     }
+     
+     char[] fileArray = file.toCharArray();
+     
+     
+     
+     
+   }*/
  }
