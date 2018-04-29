@@ -122,7 +122,10 @@
           } else {
             System.out.println("NO MATCH:" + line);
           }
+        
         }
+        
+        System.out.println("Enter a string to be analyzed:");
       }
      }
      
