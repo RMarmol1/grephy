@@ -57,33 +57,38 @@ class NFA{
   }*/
   
   public boolean accepts(String s){
-    int path = -1;
-    String acceptString = "";
-    char[] c = s.toCharArray();
-    char[] state;
-    int stateNum = 0;
-    for(int i = 0; i< c.length; i++){
-      //if state is just 1 character
-      if(String.valueOf(c[i]).equals(nfa.get(i)) && nfa.get(stateNum).length() == 1){
-        path++;
-        stateNum++;
-        acceptString += c[i];
+    char[] digest = s.toCharArray();
+    String symbol;
+    String state = "0";
+    boolean accepts = false;
+    ArrayList<String> paths = new ArrayList<String>();
+    for(int i = 0; i < digest.length; i++){
+      symbol = digest[i] + "";
+      paths = getPath(state, symbol);
+      if(!paths.isEmpty()){
+        state = paths.get(0);
+        if(Integer.valueOf(state) == acceptingState){
+          accepts = true;
+        }
       }
-
+      else{
+        accepts = false;
+      }
     }
-    
-    
-    
-    
-    if(path == acceptingState){
-      System.out.println("accepts: " + acceptString);
-      return true;
-      
+    return accepts;
+  }
+  
+  public ArrayList<String> getPath(String state, String symbol){
+    ArrayList<String> paths = new ArrayList<String>();
+    String[] arr;
+    for(int i = 0; i < delta.size(); i++){
+      arr = delta.get(i);
+      if(arr[0].equals(state) && arr[2].equals(symbol)){
+        paths.add(arr[1]);
+      }
     }
-    else {
-      System.out.println("rejects");
-      return false;
-    }
+    System.out.println(paths);
+    return paths;
   }
   
   
@@ -151,12 +156,19 @@ class NFA{
   }
   
   public static void main(String[] args){
-    NFA nfa = new NFA("a(abc)*(cde)*b");
+    NFA nfa = new NFA("a(bc)*d");
     nfa.generateNFA();
    // Scanner input = new Scanner(System.in);
    // while(input.hasNext()){
    //   nfa.accepts(input.next());
    // }
+   boolean accepts = nfa.accepts("abcbcbcbcd");
+   if(accepts == true){
+     System.out.println("yup");
+   }
+   else{
+     System.out.println("nah");
+   }
     
   }
   
