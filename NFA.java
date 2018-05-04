@@ -65,8 +65,12 @@ class NFA{
     for(int i = 0; i < digest.length; i++){
       symbol = digest[i] + "";
       paths = getPath(state, symbol);
+      System.out.println("symbol:" + symbol + " path: " + paths);
       if(!paths.isEmpty()){
         state = paths.get(0);
+        if(true){ //empty transition is used
+          i--;
+        }
         if(Integer.valueOf(state) == acceptingState){
           accepts = true;
         }
@@ -83,11 +87,12 @@ class NFA{
     String[] arr;
     for(int i = 0; i < delta.size(); i++){
       arr = delta.get(i);
-      if(arr[0].equals(state) && arr[2].equals(symbol)){
+      if(arr[0].equals(state) && (arr[2].equals(symbol) || arr[2].equals("~"))){
         paths.add(arr[1]);
+        //System.out.println("paths is :" + paths);
       }
     }
-    System.out.println(paths);
+    //System.out.println(paths);
     return paths;
   }
   
@@ -105,19 +110,29 @@ class NFA{
     for(int i = 0; i < regArr.length; i++){
       symbol = regArr[i];
       lastState = currentState;
+      //loopbackState = currentState;
+      //loopBackStates.push(loopbackState);
       if(symbol == '('){
         loopbackState = currentState;
         loopBackStates.push(loopbackState);
       }
-      else if(i+1 < regArr.length && regArr[i+1] == ')'){
+      else if(i+1 < regArr.length && regArr[i+1] == ')' ){
         loopbackState = loopBackStates.pop();
         setDelta(currentState, loopbackState, symbol);
         i+=2;
         currentState = loopbackState;
         acceptingState = currentState;
       }
-      else if(i+1 < regArr.length && regArr[i+1] == '*'){
+      else if(symbol == ')' && (i+1 < regArr.length && regArr[i+1] == '*')){
         loopbackState = loopBackStates.pop();
+        // uses '~' as epsilon
+        setDelta(currentState, loopbackState, '~');
+        i++;
+        currentState = loopbackState;
+        acceptingState = currentState;
+      }
+      else if(i+1 < regArr.length && regArr[i+1] == '*'){
+        loopbackState = lastState; //loopBackStates.pop();
         setDelta(currentState, loopbackState, symbol);
         //System.out.println("hello");
         i++;
@@ -156,13 +171,13 @@ class NFA{
   }
   
   public static void main(String[] args){
-    NFA nfa = new NFA("a(bc)*d");
+    NFA nfa = new NFA("ab*(stu(vxy)*)*h");
     nfa.generateNFA();
    // Scanner input = new Scanner(System.in);
    // while(input.hasNext()){
    //   nfa.accepts(input.next());
    // }
-   boolean accepts = nfa.accepts("abcbcbcbcd");
+   boolean accepts = nfa.accepts("astuh");
    if(accepts == true){
      System.out.println("yup");
    }
