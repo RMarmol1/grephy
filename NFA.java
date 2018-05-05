@@ -43,18 +43,6 @@ class NFA{
     
   }
   
-  /*public void setAcceptState(){
-    int t = 0;
-    /*while(nfa.get(t) != null && t < nfa.size()){
-      if(nfa.get(t+1) == null){
-        acceptingState = t;
-      }
-      t++;
-    }
-    acceptingState = nfa.size()-1;
-    System.out.println("Accepting state is " + acceptingState);
-     
-  }*/
   
   public boolean accepts(String s){
     char[] digest = s.toCharArray();
@@ -68,7 +56,7 @@ class NFA{
       System.out.println("symbol:" + symbol + " path: " + paths);
       if(!paths.isEmpty()){
         state = paths.get(0);
-        if(true){ //empty transition is used
+        if(paths.get(1).equals("~")){ //empty transition is used
           i--;
         }
         if(Integer.valueOf(state) == acceptingState){
@@ -89,6 +77,7 @@ class NFA{
       arr = delta.get(i);
       if(arr[0].equals(state) && (arr[2].equals(symbol) || arr[2].equals("~"))){
         paths.add(arr[1]);
+        paths.add(arr[2]);
         //System.out.println("paths is :" + paths);
       }
     }
@@ -158,10 +147,6 @@ class NFA{
     newDelta[0] = currState + "";
     newDelta[1] = loopbackState + "";
     newDelta[2] = symbol + "";
-    //for(String c : newDelta){
-    //  System.out.print(c + " ");
-    //}
-    //System.out.println();
     delta.add(newDelta);
   }
 
@@ -173,17 +158,19 @@ class NFA{
   public static void main(String[] args){
     NFA nfa = new NFA("ab*(stu(vxy)*)*h");
     nfa.generateNFA();
-   // Scanner input = new Scanner(System.in);
-   // while(input.hasNext()){
-   //   nfa.accepts(input.next());
-   // }
-   boolean accepts = nfa.accepts("astuh");
-   if(accepts == true){
-     System.out.println("yup");
-   }
-   else{
-     System.out.println("nah");
-   }
+    
+   boolean accepts;
+   Scanner input = new Scanner(System.in);
+    while(input.hasNext()){
+      accepts = nfa.accepts(input.next());
+      if(accepts == true){
+        System.out.println("yup");
+      }
+      else{
+        System.out.println("nah");
+      }
+    }
+   
     
   }
   
