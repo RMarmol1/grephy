@@ -177,17 +177,20 @@ class NFA{
   public void toDotNotation(String fileName) throws FileNotFoundException{
     //
     try{
-    File file = new File(fileName);
-    PrintWriter writer = new PrintWriter(fileName);
-                writer.println("digraph G{");
-                for(String [] sA : delta){
-                  writer.println("  " + sA[0] + " -> " + sA[1] + " [label=" + sA[2] + "];");
-                }
-                //writer.println("a -> b -> c;");
-                //writer.println("b -> d;");
-                writer.println("}");
+      File file = new File(fileName);
+      PrintWriter writer = new PrintWriter(fileName);
+      writer.println("digraph G{");
+      for(String [] sA : delta){
+        if(sA[2].equals("~")){
+          writer.println("  " + sA[0] + " -> " + sA[1] + " [label=ε];");
+        }
+        else {
+          writer.println("  " + sA[0] + " -> " + sA[1] + " [label=" + sA[2] + "];");
+        }
+      }
+      writer.println("}");
          
-        writer.close();
+      writer.close();
     }
     catch (FileNotFoundException ex){
        System.out.println("ERROR: File Not Found.");
