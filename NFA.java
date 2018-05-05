@@ -23,6 +23,10 @@ class NFA{
   private String regex;
   private ArrayList<String> nfa = new ArrayList<String>();
   private String match = "";
+  private boolean altPath = false;
+  
+  //private Stack<String> altMatchStack = new Stack<String>();
+  //private Stack<Integer> pathNumStack = new Stack<Integer>();
   
   NFA(String r){
     startState = 0;
@@ -30,10 +34,18 @@ class NFA{
     regex = r;
   }
   
+  public ArrayList<String[]> getDelta(){
+    return delta;
+  }
+  
+  public ArrayList<Integer> getStates(){
+    return states;
+  }
+  
   public void generateNFA(){
     
     setStates();
-    /*for(String[] sA : delta){
+    for(String[] sA : delta){
       for(String s : sA){
         System.out.print(s + " ");
       }
@@ -41,7 +53,7 @@ class NFA{
     }
     //System.out.println(delta);
     System.out.println(states);
-    System.out.println(acceptingState);*/
+    System.out.println(acceptingState);
     
   }
   
@@ -54,6 +66,8 @@ class NFA{
   }
   
   public boolean accepts(String s){
+    Stack<String> altMatchStack = new Stack<String>();
+    Stack<Integer> pathNumStack = new Stack<Integer>();
     char[] digest = s.toCharArray();
     String symbol;
     String state = "0";
@@ -66,6 +80,7 @@ class NFA{
       //System.out.println("symbol:" + symbol + " path: " + paths);
       if(!paths.isEmpty()){
         state = paths.get(0);
+
         if(paths.get(1).equals("~")){ //empty transition is used
           i--;
         }
@@ -75,12 +90,31 @@ class NFA{
         if(Integer.valueOf(state) == acceptingState){
           accepts = true;
         }
-        //match += symbol;
+        if(paths.size() > 1){
+          altMatchStack.push(match);
+          pathNumStack.push(2);
+        }
+
+        
       }
       else{
         if(match.length() > 0){
          //checks if left part still matches
+         //System.out.println("match");
          accepts = accepts(match);
+         /*if(accepts == false && altPath == false){
+           altPath = true;
+           accepts = accepts(match);
+         }*/
+         
+         //alt path 2
+         if(accepts == false && !altMatchStack.isEmpty()){
+           altPath = true;
+           accepts = accepts(altMatchStack.pop());
+         }
+         //
+         
+         
          break;
         }
         else{
@@ -101,9 +135,10 @@ class NFA{
       if(arr[0].equals(state) && (arr[2].equals(symbol) || arr[2].equals("~"))){
         paths.add(arr[1]);
         paths.add(arr[2]);
-        //System.out.println("paths is :" + paths);
+        
       }
     }
+    System.out.println("paths from state " + state + " is :" + paths);
     //System.out.println(paths);
     return paths;
   }
@@ -119,6 +154,7 @@ class NFA{
     int newState;
     int stateCount = 1;
     Stack<Integer> loopBackStates = new Stack<Integer>();
+    //Stack<Character> loopBackSymbol = new Stack<Character>();
     for(int i = 0; i < regArr.length; i++){
       symbol = regArr[i];
       lastState = currentState;
@@ -127,6 +163,7 @@ class NFA{
       if(symbol == '('){
         loopbackState = currentState;
         loopBackStates.push(loopbackState);
+        //loopBackSymbol.push(regArr[i-1]); //added
       }
       else if(i+1 < regArr.length && regArr[i+1] == ')' ){
         loopbackState = loopBackStates.pop();
@@ -139,6 +176,7 @@ class NFA{
         loopbackState = loopBackStates.pop();
         // uses '~' as epsilon
         setDelta(currentState, loopbackState, '~');
+        //setDelta(loopbackState, loopbackState, loopBackSymbol.pop());
         i++;
         currentState = loopbackState;
         acceptingState = currentState;
@@ -197,8 +235,8 @@ class NFA{
     }
   }
   
-  /*public static void main(String[] args) {
-    NFA nfa = new NFA("ab*");
+  public static void main(String[] args) {
+    NFA nfa = new NFA("a(stu(vxy)*)*b");
     nfa.generateNFA();
     
     //nfa.toDotNotation();
@@ -210,6 +248,7 @@ class NFA{
       accepts = nfa.accepts(input.next());
       if(accepts == true){
         System.out.println("yup");
+        System.out.println(nfa.getMatch());
       }
       else{
         System.out.println("nah");
@@ -217,7 +256,7 @@ class NFA{
     }
    
     
-  }*/
+  }
   
   
   

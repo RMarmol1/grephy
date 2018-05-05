@@ -113,10 +113,19 @@ class Driver_grephy{
       // make NFA
       NFA nfa = new NFA(regex);
       nfa.generateNFA();
+      
+      // make DFA
+      DFA dfa = new DFA();
+      dfa.generateFromNFA(nfa);
         
       // if dot notation requested for nfa
       if(nDot == true){
         nfa.toDotNotation(nFileName);
+      }
+      
+      // if dot notation requested for dfa
+      if(dDot == true){
+        nfa.toDotNotation(dFileName);
       }
           
       Scanner input2 = new Scanner(System.in);
