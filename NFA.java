@@ -11,6 +11,9 @@
  import java.util.Scanner;
  import java.util.ArrayList;
  import java.util.Stack;
+ import java.io.PrintWriter;
+ import java.io.File;
+ import java.io.FileNotFoundException;
 class NFA{
   
   private ArrayList<String[]> delta = new ArrayList<String[]>();
@@ -43,6 +46,9 @@ class NFA{
     
   }
   
+  public ArrayList<String[]> getDeltas(){
+    return delta;
+  }
   
   public boolean accepts(String s){
     char[] digest = s.toCharArray();
@@ -151,15 +157,34 @@ class NFA{
   }
 
   
-  public void toDotNotation(){
+  public void toDotNotation() throws FileNotFoundException{
     //
+    try{
+    File file = new File("NFA.dot");
+    PrintWriter writer = new PrintWriter("NFA.dot");
+                writer.println("digraph G{");
+                for(String [] sA : delta){
+                  writer.println(sA[0] + " -> " + sA[1] + " [label=" + sA[2] + "];");
+                }
+                //writer.println("a -> b -> c;");
+                //writer.println("b -> d;");
+                writer.println("}");
+         
+        writer.close();
+    }
+    catch (FileNotFoundException ex){
+       System.out.println("ERROR: File Not Found.");
+    }
   }
-  
-  public static void main(String[] args){
+  /*
+  public static void main(String[] args) {
     NFA nfa = new NFA("ab*(stu(vxy)*)*h");
     nfa.generateNFA();
     
+    nfa.toDotNotation();
+    
    boolean accepts;
+   
    Scanner input = new Scanner(System.in);
     while(input.hasNext()){
       accepts = nfa.accepts(input.next());
@@ -172,7 +197,7 @@ class NFA{
     }
    
     
-  }
+  }*/
   
   
   
