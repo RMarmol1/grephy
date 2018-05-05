@@ -22,6 +22,7 @@ class NFA{
   private int acceptingState;
   private String regex;
   private ArrayList<String> nfa = new ArrayList<String>();
+  private String match = "";
   
   NFA(String r){
     startState = 0;
@@ -30,11 +31,9 @@ class NFA{
   }
   
   public void generateNFA(){
-    //
-    //createStates();
-    //setAcceptState();
+    
     setStates();
-    for(String[] sA : delta){
+    /*for(String[] sA : delta){
       for(String s : sA){
         System.out.print(s + " ");
       }
@@ -42,7 +41,7 @@ class NFA{
     }
     //System.out.println(delta);
     System.out.println(states);
-    System.out.println(acceptingState);
+    System.out.println(acceptingState);*/
     
   }
   
@@ -50,27 +49,45 @@ class NFA{
     return delta;
   }
   
+  public String getMatch(){
+    return match;
+  }
+  
   public boolean accepts(String s){
     char[] digest = s.toCharArray();
     String symbol;
     String state = "0";
     boolean accepts = false;
+    match = "";
     ArrayList<String> paths = new ArrayList<String>();
     for(int i = 0; i < digest.length; i++){
       symbol = digest[i] + "";
       paths = getPath(state, symbol);
-      System.out.println("symbol:" + symbol + " path: " + paths);
+      //System.out.println("symbol:" + symbol + " path: " + paths);
       if(!paths.isEmpty()){
         state = paths.get(0);
         if(paths.get(1).equals("~")){ //empty transition is used
           i--;
         }
+        else{
+          match += symbol;
+        }
         if(Integer.valueOf(state) == acceptingState){
           accepts = true;
         }
+        //match += symbol;
       }
       else{
-        accepts = false;
+        if(match.length() > 0){
+         //checks if left part still matches
+         accepts = accepts(match);
+         break;
+        }
+        else{
+          accepts = false;
+          break;
+        }
+        
       }
     }
     return accepts;
@@ -157,14 +174,14 @@ class NFA{
   }
 
   
-  public void toDotNotation() throws FileNotFoundException{
+  public void toDotNotation(String fileName) throws FileNotFoundException{
     //
     try{
-    File file = new File("NFA.dot");
-    PrintWriter writer = new PrintWriter("NFA.dot");
+    File file = new File(fileName);
+    PrintWriter writer = new PrintWriter(fileName);
                 writer.println("digraph G{");
                 for(String [] sA : delta){
-                  writer.println(sA[0] + " -> " + sA[1] + " [label=" + sA[2] + "];");
+                  writer.println("  " + sA[0] + " -> " + sA[1] + " [label=" + sA[2] + "];");
                 }
                 //writer.println("a -> b -> c;");
                 //writer.println("b -> d;");
@@ -176,12 +193,12 @@ class NFA{
        System.out.println("ERROR: File Not Found.");
     }
   }
-  /*
-  public static void main(String[] args) {
-    NFA nfa = new NFA("ab*(stu(vxy)*)*h");
+  
+  /*public static void main(String[] args) {
+    NFA nfa = new NFA("ab*");
     nfa.generateNFA();
     
-    nfa.toDotNotation();
+    //nfa.toDotNotation();
     
    boolean accepts;
    

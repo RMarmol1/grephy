@@ -20,9 +20,50 @@
      // System.out.println(args[0]);
      // System.out.println(args[1]);
       
+      boolean nDot = false;
+      boolean dDot = false;
+      String dFileName = "";
+      String nFileName = "";
+      String regex = "";
+      String fileName = "";
+      
       // Set arguments from cmd line to variables
-      String regex = args[0];
-      String fileName = args[1];
+      if(args[0].equals("-n")){
+        nDot = true;
+        nFileName = args[1]; 
+        
+        if(args[2].equals("-d")){
+          dDot = true;
+          dFileName = args[3];
+          regex = args[4];
+          fileName = args[5];
+        }
+        else{
+          regex = args[2];
+          fileName = args[3];
+        }
+      }
+      else if(args[0].equals("-d")){
+        dDot = true;
+        dFileName = args[1];
+        if(args[2].equals("-n")){
+          nDot = true;
+          nFileName = args[3];
+          regex = args[4];
+          fileName = args[5];
+        }
+        else{
+          regex = args[2];
+          fileName = args[3];
+        }
+      }
+      else if(!args[0].equals("-n") && !args[0].equals("-d")){
+        regex = args[0];
+        fileName = args[1];
+      }
+      else{
+      }
+
       
       // work with desired file if found
       File fileIn = new File (fileName);
@@ -71,62 +112,53 @@
         System.out.println("Alphabet of file is:");
         System.out.println(alphabet);
 
-      
-      
-      Scanner input2 = new Scanner(System.in);
-      
-      System.out.println("Enter a string to be analyzed:");
-      
-      // Scans through each line of an input file
-      while (input2.hasNextLine()){
-        
-        
-        // String to be scanned to find the pattern.
-        String line = input2.nextLine();
-        
-        // System.out.println("Enter a string to be analyzed:");
-        
-        // regular expression 
-        // this one finds strings in alphabet {a,b} where number of a's is odd
-       // String pattern = "^b*a(b*ab*a)*b*";
-        
-        // check if string contains illegal characters
-        char[] lineArr = line.toCharArray();
-        int legalCount = 0;
-        for(int i = 0; i < alphabet.length; i++){
-          for(int t = 0; t < lineArr.length; t++){
-            if(lineArr[t] == alphabet[i]){
-              legalCount++;
-            }
-            
-          }
-        }  
-        if(legalCount < lineArr.length){
-          //System.out.println(legalCount);
-          //System.out.println(lineArr.length);
-          System.out.println("Sorry, you used an illegal character which is not in the alphabet of the file");
-          System.out.println("Alphabet of file is:");
-          System.out.println(alphabet);
+        //make NFA
+        NFA nfa = new NFA(regex);
+        nfa.generateNFA();
+        // if dot notation requested for nfa
+        if(nDot == true){
+          nfa.toDotNotation(nFileName);
         }
-        else{
-        
-          Pattern r = Pattern.compile(regex);
-
-          Matcher m = r.matcher(line);
-        
-          // Checks string on regular expression and prints matches
-          if (m.find( )) {
-            System.out.println("MATCH FOUND: " + m.group(0) );
-          // System.out.println("Found value: " + m.group(1) );
-          // System.out.println("Found value: " + m.group(2) );
-          } else {
-            System.out.println("NO MATCH:" + line);
-          }
-        
-        }
-        
+          
+        Scanner input2 = new Scanner(System.in);
+      
         System.out.println("Enter a string to be analyzed:");
-      }
+      
+        // Scans through each line of an input file
+        while (input2.hasNextLine()){
+        
+          // String to be scanned to find the pattern.
+          String line = input2.nextLine();
+        
+        
+          // check if string contains illegal characters
+          char[] lineArr = line.toCharArray();
+          int legalCount = 0;
+          for(int i = 0; i < alphabet.length; i++){
+            for(int t = 0; t < lineArr.length; t++){
+              if(lineArr[t] == alphabet[i]){
+                legalCount++;
+              }
+            
+            }
+          } 
+        
+          if(legalCount < lineArr.length){
+            System.out.println("Sorry, you used an illegal character which is not in the alphabet of the file");
+            System.out.println("Alphabet of file is:");
+            System.out.println(alphabet);
+          }
+          else{
+            if(nfa.accepts(line)){
+              System.out.println("Accepted: " + nfa.getMatch());
+            }
+            else{
+              System.out.println("Rejected.");
+            }
+          }
+        
+          System.out.println("Enter a string to be analyzed:");
+        }
      }
      
      catch (FileNotFoundException ex){
