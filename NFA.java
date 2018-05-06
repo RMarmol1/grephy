@@ -56,7 +56,7 @@ class NFA{
       System.out.println();
     }
     //System.out.println(delta);
-    System.out.println(states);
+    //System.out.println(states);
     System.out.println(acceptingState);
     
   }
@@ -158,16 +158,81 @@ class NFA{
     int newState;
     int stateCount = 1;
     Stack<Integer> loopBackStates = new Stack<Integer>();
+    Stack<Integer> plusState = new Stack<Integer>();
     //Stack<Character> loopBackSymbol = new Stack<Character>();
     for(int i = 0; i < regArr.length; i++){
       symbol = regArr[i];
       lastState = currentState;
       //loopbackState = currentState;
       //loopBackStates.push(loopbackState);
-      if(symbol == '('){
+      if(!plusState.isEmpty() && i+1 < regArr.length && regArr[i] != '(' && regArr[i+1] != ')' && regArr[i+1] != '*' && regArr[i+1] != '+'){
+        loopbackState = plusState.pop();
+        setDelta(loopbackState, loopBackStates.pop(), symbol);
+        acceptingState = currentState;
+        System.out.println("1");
+      }
+      else if(!plusState.isEmpty() && symbol == '('){
+        System.out.println("what");
+        /*loopbackState = plusState.pop();
+        setDelta(loopbackState, loopBackStates.pop(), symbol);
+        acceptingState = currentState;*/
+        
+        loopbackState = currentState;
+        loopBackStates.push(loopbackState);
+        System.out.println("2");
+        
+      }
+      else if(!plusState.isEmpty() && (i+1 < regArr.length && regArr[i+1] == ')') ){
+        loopbackState = plusState.pop();
+        setDelta(loopbackState, loopBackStates.pop(), symbol);
+        acceptingState = currentState;
+        
+        loopbackState = loopBackStates.pop();
+        setDelta(currentState, loopbackState, symbol);
+        i+=2;
+        currentState = loopbackState;
+        acceptingState = currentState;
+        if(i<regArr.length && regArr[i] == '+'){
+          loopbackState = lastState;
+          plusState.push(loopbackState);
+          loopBackStates.push(currentState);
+          i++;
+        }
+        else if(regArr[i] != '*' && regArr[i] != ')' && regArr[i] != '+'){
+          i--;
+        }
+        System.out.println("3");
+      }
+      else if(!plusState.isEmpty() && (symbol == ')' && (i+1 < regArr.length && regArr[i+1] == '*'))){
+        loopbackState = plusState.pop();
+        setDelta(loopbackState, loopBackStates.pop(), symbol);
+        acceptingState = currentState;
+        
+        loopbackState = loopBackStates.pop();
+        // uses '~' as epsilon
+        setDelta(currentState, loopbackState, '~');
+        i++;
+        currentState = loopbackState;
+        acceptingState = currentState;
+        System.out.println("4");
+      }
+      else if(!plusState.isEmpty() && (i+1 < regArr.length && regArr[i+1] == '*') ){
+        loopbackState = plusState.pop();
+        setDelta(loopbackState, loopBackStates.pop(), symbol);
+        acceptingState = currentState;
+        
+        loopbackState = lastState; 
+        setDelta(currentState, loopbackState, symbol);
+        i++;
+        currentState = loopbackState;
+        acceptingState = currentState;
+        System.out.println("5");
+      }
+      else if(symbol == '('){
         loopbackState = currentState;
         loopBackStates.push(loopbackState);
         //loopBackSymbol.push(regArr[i-1]); //added
+        System.out.println("6");
       }
       else if(i+1 < regArr.length && regArr[i+1] == ')' ){
         loopbackState = loopBackStates.pop();
@@ -175,24 +240,48 @@ class NFA{
         i+=2;
         currentState = loopbackState;
         acceptingState = currentState;
+        if(i<regArr.length && regArr[i] == '+'){
+          loopbackState = lastState;
+          plusState.push(loopbackState);
+          loopBackStates.push(currentState);
+          i++;
+        }
+       /* else if(regArr[i] != '*' && regArr[i] != ')' && regArr[i] != '+'){
+          i--;
+        }*/
+        System.out.println("7");
       }
       else if(symbol == ')' && (i+1 < regArr.length && regArr[i+1] == '*')){
         loopbackState = loopBackStates.pop();
         // uses '~' as epsilon
         setDelta(currentState, loopbackState, '~');
-        //setDelta(loopbackState, loopbackState, loopBackSymbol.pop());
         i++;
         currentState = loopbackState;
         acceptingState = currentState;
+        System.out.println("8");
       }
       else if(i+1 < regArr.length && regArr[i+1] == '*'){
-        loopbackState = lastState; //loopBackStates.pop();
+        loopbackState = lastState; 
         setDelta(currentState, loopbackState, symbol);
-        //System.out.println("hello");
         i++;
         currentState = loopbackState;
         acceptingState = currentState;
+        System.out.println("9");
       }
+      else if(i+1 < regArr.length && regArr[i+1] == '+'){
+        states.add(stateCount);
+        setDelta(lastState, stateCount, symbol);
+        currentState = stateCount;
+        acceptingState = currentState;
+        stateCount++;
+        loopbackState = lastState;
+        plusState.push(loopbackState);
+        loopBackStates.push(currentState);
+        i++;
+        System.out.println("10");
+        //System.out.println("plus" + plusState);
+      }
+      
       else {
         //make a new state
         states.add(stateCount);
@@ -200,8 +289,9 @@ class NFA{
         currentState = stateCount;
         acceptingState = currentState;
         stateCount++;
+        System.out.println("11");
       }
-      
+      System.out.println(loopBackStates + " " + symbol);
       
       
     }
@@ -253,7 +343,7 @@ class NFA{
   }
   
   public static void main(String[] args) {
-    NFA nfa = new NFA("a(stu(vxy)*)*b");
+    NFA nfa = new NFA("ab*(b(ab)*)*b*");
     nfa.generateNFA();
     
     //nfa.toDotNotation();

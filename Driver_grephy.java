@@ -68,7 +68,8 @@ class Driver_grephy{
      
     try{
        
-      Scanner input = new Scanner(fileIn);
+      Scanner inputAlpha = new Scanner(fileIn);
+      Scanner inputLineChecker = new Scanner(fileIn);
         
       // create array to hold alphabet of file (max value of # accepted characters (A-Z, a-z, 0-9))
       char[] alphabet = new char[61];
@@ -79,8 +80,8 @@ class Driver_grephy{
       int count = 0;
       String fileString = "";
      
-      while(input.hasNext()){
-        fileString += input.next();
+      while(inputAlpha.hasNext()){
+        fileString += inputAlpha.next();
       }
      
       char[] fileArray = fileString.toCharArray();
@@ -100,15 +101,23 @@ class Driver_grephy{
         }
       }
       
-      System.out.println("Hello! Welcome to Grep Tool!");
-      System.out.println("Type in a string of characters to see if it matches the regular expression");
-      System.out.println("If a match is found, console will output: MATCH FOUND");
-      System.out.println("If a match is not found, console will output: NOT FOUND");
-      System.out.println("If you wish to cancel this program at any time, hit CTRL+C");
+      System.out.println("************************************************************************");
+      System.out.println("***                                                                  ***");
+      System.out.println("***                Hello! Welcome to Grep Tool!                      ***");
+      System.out.println("***                                                                  ***");
+      System.out.println("***    Each line from the file will be evaluated                     ***");
+      System.out.println("***    and analyzed against the regex using an NFA and DFA           ***");
+      System.out.println("***    If a match is found, console will output: MATCH FOUND         ***");
+      System.out.println("***    If a match is not found, console will output: NOT FOUND       ***");
+      System.out.println("***    If you wish to cancel this program at any time, hit CTRL+C    ***");
+      System.out.println("***                                                                  ***");
+      System.out.println("************************************************************************");
+      System.out.println();
       System.out.println("Regex to match is:");
       System.out.println(regex);
       System.out.println("Alphabet of file is:");
       System.out.println(alphabet);
+      System.out.println();
 
       // make NFA
       NFA nfa = new NFA(regex);
@@ -128,15 +137,15 @@ class Driver_grephy{
         dfa.toDotNotation(dFileName);
       }
           
-      Scanner input2 = new Scanner(System.in);
+      //Scanner input2 = new Scanner(System.in);
       
-      System.out.println("Enter a string to be analyzed:");
-      
+      //System.out.println("Enter a string to be analyzed:");
+      int lineNum = 0;
       // Scans through each line of an input file
-      while (input2.hasNextLine()){
+      while (inputLineChecker.hasNextLine()){
         
         // String to be scanned to find the pattern.
-        String line = input2.nextLine();
+        String line = inputLineChecker.nextLine();
         
         
         // check if string contains illegal characters
@@ -158,14 +167,15 @@ class Driver_grephy{
         }
         else {
           if(dfa.accepts(line)){
-            System.out.println("Accepted: " + dfa.getMatch());
+            System.out.println("LINE " + lineNum + ": MATCH FOUND: " + dfa.getMatch());
           }
           else {
-            System.out.println("Rejected.");
+            System.out.println("LINE " + lineNum + ": NOT FOUND.");
           }
+          lineNum++;
         }
         
-        System.out.println("Enter a string to be analyzed:");
+        //System.out.println("Enter a string to be analyzed:");
       }
     }
      

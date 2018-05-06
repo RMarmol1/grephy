@@ -9,6 +9,7 @@ class DFA{
   private int startState;
   private ArrayList<Integer> acceptingStates = new ArrayList<Integer>();
   private String match;
+  private boolean secondCheck = false;
   
   DFA(){
     startState = 0;
@@ -113,7 +114,7 @@ class DFA{
       //prevState = s1;
       }
     }
-    System.out.println(states);
+    //System.out.println(states);
   }
   
   public boolean accepts(String s){
@@ -125,37 +126,42 @@ class DFA{
     boolean accepts = false;
     match = "";
     ArrayList<String> paths = new ArrayList<String>();
-    for(int i = 0; i < digest.length; i++){
-      symbol = digest[i] + "";
-      paths = getPath(state, symbol);
-      //System.out.println("symbol:" + symbol + " path: " + paths);
-      if(!paths.isEmpty()){
-        state = paths.get(0);
-
-        match += symbol;
-        if(acceptingStates.indexOf(Integer.valueOf(state)) > -1){
-          accepts = true;
-        }
-        
-
-        
+    if(digest.length == 0){
+      if(acceptingStates.indexOf(Integer.valueOf(state)) > -1){
+        accepts = true;
+        //System.out.println("acc is:" + acceptingStates);
       }
-      else{
-        if(match.length() > 0){ 
-         accepts = accepts(match);
-         if(accepts == false){
-          break;
-         }
+    }
+    else{
+      for(int i = 0; i < digest.length; i++){
+        symbol = digest[i] + "";
+        paths = getPath(state, symbol);
+        //System.out.println("symbol:" + symbol + " path: " + paths);
+      
+        if(!paths.isEmpty()){
+          state = paths.get(0);
+
+          match += symbol;
+          if(acceptingStates.indexOf(Integer.valueOf(state)) > -1){
+            accepts = true;
+            //System.out.println("acc is:" + acceptingStates);
+          }
+          
         }
         else{
           accepts = false;
           break;
         }
-        
       }
+      if(match.length() > 0 && secondCheck == false){ 
+        secondCheck = true;
+        accepts = accepts(match);
+      }
+      secondCheck = false;
     }
     
     return accepts;
+    
   }
   
   public ArrayList<String> getPath(String state, String symbol){
@@ -169,7 +175,7 @@ class DFA{
         
       }
     }
-    System.out.println("paths from state " + state + " is :" + paths);
+    //System.out.println("paths from state " + state + " is :" + paths);
     //System.out.println(paths);
     return paths;
   }
