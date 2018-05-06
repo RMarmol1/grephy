@@ -7,11 +7,11 @@ class DFA{
   private ArrayList<String[]> delta = new ArrayList<String[]>();
   private ArrayList<Integer> states = new ArrayList<Integer>();
   private int startState;
-  private int acceptingState;
+  private ArrayList<Integer> acceptingStates = new ArrayList<Integer>();
   
   DFA(){
     startState = 0;
-    acceptingState = 0;
+    acceptingStates.add(0);
   }
   
   public void printDelta(){
@@ -24,6 +24,10 @@ class DFA{
     }
   }
   
+  public void printAccepting(){
+    System.out.println(acceptingStates);
+  }
+  
   public void generateFromNFA(NFA nfa){
     String[] dArr;
     int s1;
@@ -31,8 +35,8 @@ class DFA{
     char symbol;
     char prevSymbol = '~';
     int sCount = nfa.getStates().size();
-    int prevState;
-    int newState;
+    int prevState = 0;
+    int newState = 0;
     //System.out.println("sCount:" +sCount);
     int count = 0;
     for(int i = 0; i < nfa.getDelta().size(); i++){
@@ -53,19 +57,29 @@ class DFA{
             //sCount++;
             //prevState = s1;
             if(Integer.parseInt(sArr[0]) == s1 || sArr[2].equals("~")){
+              String[] remove = delta.get(delta.size()-1);
+              delta.remove(remove);
               newState = s1;
+              prevState--;
+              symbol = prevSymbol;
+              //symbol = sArr[2].charAt(0);
             }
+            /*else if(Integer.parseInt(sArr[1]) == s1){
+              System.out.println("huh");
+              newState = prevState;
+              symbol = prevSymbol;
+            }*/
             //if(sArr(2).equals("~")){
             //  newState
             //}
             else {
               newState = sCount;
               sCount++;
+              symbol = sArr[2].charAt(0);
             }
-            //sCount++;
-            symbol = sArr[2].charAt(0);
-            //sCount++;
-            //states.add(s1);
+            
+            //symbol = sArr[2].charAt(0);
+
             if(states.indexOf(s2) == -1){
               states.add(s2);
             }
@@ -73,9 +87,13 @@ class DFA{
             prevSymbol = symbol;
             prevState = newState;
           }
+          
           //System.out.println(sArr[0]);
           //count++;
         }
+        
+        acceptingStates.add(newState);
+        
       }
       else{
       if(states.indexOf(s1) == -1){
@@ -86,6 +104,7 @@ class DFA{
       }
       setDelta(s1, s2, symbol);
       prevSymbol = symbol;
+      //prevState = s1;
       }
     }
     System.out.println(states);
@@ -121,13 +140,14 @@ class DFA{
     delta.add(newDelta);
   }
   
-  public static void main(String[] args){
+  /*public static void main(String[] args){
     DFA dfa = new DFA();
     NFA nfa = new NFA("a(stu(vxy)*)*b");
     nfa.generateNFA();
     dfa.generateFromNFA(nfa);
     dfa.printDelta();
-  }
+    dfa.printAccepting();
+  }*/
   
  
   

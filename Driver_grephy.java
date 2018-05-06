@@ -125,7 +125,7 @@ class Driver_grephy{
       
       // if dot notation requested for dfa
       if(dDot == true){
-        nfa.toDotNotation(dFileName);
+        dfa.toDotNotation(dFileName);
       }
           
       Scanner input2 = new Scanner(System.in);

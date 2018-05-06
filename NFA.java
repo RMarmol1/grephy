@@ -205,10 +205,23 @@ class NFA{
   
   public void setDelta(int currState, int loopbackState, char symbol){
     String[] newDelta = new String[3];
+    boolean alreadyIn = false;
     newDelta[0] = currState + "";
     newDelta[1] = loopbackState + "";
     newDelta[2] = symbol + "";
-    delta.add(newDelta);
+    for(String[] sA : delta){
+      if(sA[0].equals(newDelta[0]) && sA[1].equals(newDelta[1]) && sA[2].equals(newDelta[2])){
+        alreadyIn = true;
+      }
+    }
+    if((currState == loopbackState && symbol == '~') || (alreadyIn == true)){
+    }
+    //else if(delta.indexOf(newDelta)
+    else{
+      //System.out.println("index is: " + delta.indexOf(newDelta));
+      delta.add(newDelta);
+    }
+    
   }
 
   
