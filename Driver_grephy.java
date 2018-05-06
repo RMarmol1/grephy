@@ -1,6 +1,6 @@
 /* CMPT 440
  * Final Project
- * Filename: Driver_grephy.java
+ * Filename: grephy.java
  * Student name: Rafael Marmol
  *
  * Version of a grep utility which searches files for regular expression pattern matches and produces dot graph file
@@ -14,9 +14,17 @@
  import java.util.regex.Pattern;
  
 class Driver_grephy{
-   
+  
+  /* main
+   *  parameters:
+   *        args -- arguments from command line
+   *  return value: none
+   * 
+   *  runs main method of program
+   */  
   public static void main(String[] args) throws FileNotFoundException {
-             
+    
+    // variables to hold args from cmd line    
     boolean nDot = false;
     boolean dDot = false;
     String dFileName = "";
@@ -68,6 +76,7 @@ class Driver_grephy{
      
     try{
        
+      // scanners for checking alphabet and another to check each line 
       Scanner inputAlpha = new Scanner(fileIn);
       Scanner inputLineChecker = new Scanner(fileIn);
         
@@ -77,7 +86,10 @@ class Driver_grephy{
       // used to check for duplicates later
       boolean dup = false;
       
+      // used to keep place in array
       int count = 0;
+      
+      //used get each letter into a string
       String fileString = "";
      
       while(inputAlpha.hasNext()){
@@ -101,6 +113,9 @@ class Driver_grephy{
         }
       }
       
+      inputAlpha.close();
+      
+      // display greeting
       System.out.println("************************************************************************");
       System.out.println("***                                                                  ***");
       System.out.println("***                Hello! Welcome to Grep Tool!                      ***");
@@ -110,6 +125,8 @@ class Driver_grephy{
       System.out.println("***    If a match is found, console will output: MATCH FOUND         ***");
       System.out.println("***    If a match is not found, console will output: NOT FOUND       ***");
       System.out.println("***    If you wish to cancel this program at any time, hit CTRL+C    ***");
+      System.out.println("***                                                                  ***");
+      System.out.println("***    Developer: Rafael Marmol                                      ***");
       System.out.println("***                                                                  ***");
       System.out.println("************************************************************************");
       System.out.println();
@@ -136,11 +153,10 @@ class Driver_grephy{
       if(dDot == true){
         dfa.toDotNotation(dFileName);
       }
-          
-      //Scanner input2 = new Scanner(System.in);
       
-      //System.out.println("Enter a string to be analyzed:");
+      // used to keep track of which line you're on
       int lineNum = 0;
+      
       // Scans through each line of an input file
       while (inputLineChecker.hasNextLine()){
         
@@ -165,6 +181,8 @@ class Driver_grephy{
           System.out.println("Alphabet of file is:");
           System.out.println(alphabet);
         }
+        
+        //if no illegal characters used, then compute on dfa and display match
         else {
           if(dfa.accepts(line)){
             System.out.println("LINE " + lineNum + ": MATCH FOUND: " + dfa.getMatch());
@@ -174,11 +192,13 @@ class Driver_grephy{
           }
           lineNum++;
         }
-        
-        //System.out.println("Enter a string to be analyzed:");
+
       }
+      
+      inputLineChecker.close();
     }
-     
+    
+    // if file not found
     catch (FileNotFoundException ex){
       System.out.println("ERROR: File Not Found.");
     }
