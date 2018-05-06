@@ -157,8 +157,8 @@ class Driver_grephy{
           System.out.println(alphabet);
         }
         else {
-          if(nfa.accepts(line)){
-            System.out.println("Accepted: " + nfa.getMatch());
+          if(dfa.accepts(line)){
+            System.out.println("Accepted: " + dfa.getMatch());
           }
           else {
             System.out.println("Rejected.");

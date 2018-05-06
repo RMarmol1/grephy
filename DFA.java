@@ -8,10 +8,11 @@ class DFA{
   private ArrayList<Integer> states = new ArrayList<Integer>();
   private int startState;
   private ArrayList<Integer> acceptingStates = new ArrayList<Integer>();
+  private String match;
   
   DFA(){
     startState = 0;
-    acceptingStates.add(0);
+    //acceptingStates.add(0);
   }
   
   public void printDelta(){
@@ -28,6 +29,10 @@ class DFA{
     System.out.println(acceptingStates);
   }
   
+  public String getMatch(){
+    return match;
+  }
+  
   public void generateFromNFA(NFA nfa){
     String[] dArr;
     int s1;
@@ -39,6 +44,7 @@ class DFA{
     int newState = 0;
     //System.out.println("sCount:" +sCount);
     int count = 0;
+    acceptingStates.add(nfa.getAccepting());
     for(int i = 0; i < nfa.getDelta().size(); i++){
       dArr = nfa.getDelta().get(i);
       s1 = Integer.parseInt(dArr[0]);
@@ -110,8 +116,62 @@ class DFA{
     System.out.println(states);
   }
   
-  public void epsilonCase(int state){
+  public boolean accepts(String s){
+    //Stack<String> altMatchStack = new Stack<String>();
+    //Stack<Integer> pathNumStack = new Stack<Integer>();
+    char[] digest = s.toCharArray();
+    String symbol;
+    String state = "0";
+    boolean accepts = false;
+    match = "";
+    ArrayList<String> paths = new ArrayList<String>();
+    for(int i = 0; i < digest.length; i++){
+      symbol = digest[i] + "";
+      paths = getPath(state, symbol);
+      //System.out.println("symbol:" + symbol + " path: " + paths);
+      if(!paths.isEmpty()){
+        state = paths.get(0);
+
+        match += symbol;
+        if(acceptingStates.indexOf(Integer.valueOf(state)) > -1){
+          accepts = true;
+        }
+        
+
+        
+      }
+      else{
+        if(match.length() > 0){ 
+         accepts = accepts(match);
+         if(accepts == false){
+          break;
+         }
+        }
+        else{
+          accepts = false;
+          break;
+        }
+        
+      }
+    }
     
+    return accepts;
+  }
+  
+  public ArrayList<String> getPath(String state, String symbol){
+    ArrayList<String> paths = new ArrayList<String>();
+    String[] arr;
+    for(int i = 0; i < delta.size(); i++){
+      arr = delta.get(i);
+      if(arr[0].equals(state) && arr[2].equals(symbol)){
+        paths.add(arr[1]);
+        paths.add(arr[2]);
+        
+      }
+    }
+    System.out.println("paths from state " + state + " is :" + paths);
+    //System.out.println(paths);
+    return paths;
   }
   
   public void toDotNotation(String fileName) throws FileNotFoundException{
@@ -140,14 +200,20 @@ class DFA{
     delta.add(newDelta);
   }
   
-  /*public static void main(String[] args){
+  public static void main(String[] args){
     DFA dfa = new DFA();
     NFA nfa = new NFA("a(stu(vxy)*)*b");
     nfa.generateNFA();
     dfa.generateFromNFA(nfa);
+    if(dfa.accepts("ab") == true){
+      System.out.println("Yes");
+    }
+    else {
+      System.out.println("No");
+    }
     dfa.printDelta();
     dfa.printAccepting();
-  }*/
+  }
   
  
   

@@ -34,6 +34,10 @@ class NFA{
     regex = r;
   }
   
+  public int getAccepting(){
+    return acceptingState;
+  }
+  
   public ArrayList<String[]> getDelta(){
     return delta;
   }
