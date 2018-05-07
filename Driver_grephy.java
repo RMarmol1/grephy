@@ -10,8 +10,6 @@
  */
  import java.io.*;
  import java.util.Scanner;
- import java.util.regex.Matcher;
- import java.util.regex.Pattern;
  
 class Driver_grephy{
   
@@ -124,7 +122,6 @@ class Driver_grephy{
       System.out.println("***    and analyzed against the regex using an NFA and DFA           ***");
       System.out.println("***    If a match is found, console will output: MATCH FOUND         ***");
       System.out.println("***    If a match is not found, console will output: NOT FOUND       ***");
-      System.out.println("***    If you wish to cancel this program at any time, hit CTRL+C    ***");
       System.out.println("***                                                                  ***");
       System.out.println("***    Developer: Rafael Marmol                                      ***");
       System.out.println("***                                                                  ***");
