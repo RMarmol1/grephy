@@ -1,0 +1,13 @@
+a
+bcd
+bd
+bcccccccccccd
+abcd
+A
+ABCD
+CCCCCCC
+AA
+
+abCDD
+aa
+iloveDFAs
